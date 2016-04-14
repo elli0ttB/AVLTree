@@ -1,0 +1,281 @@
+import java.util.ArrayList;
+
+// Tony Song
+// Elliott Beach
+// Lab 9
+
+public class BinarySearchTree<K extends Comparable<K>, V> {
+	protected BSTNode root = null;
+	protected int size = 0;
+
+	/**
+	 * @return true if the tree is empty, false otherwise
+	 **/
+	public boolean isEmpty() {
+		return root == null;
+	}
+
+	/**
+	 * @return the number of elements in the tree
+	 **/
+	public int size() {
+		return size;
+	}
+
+	/**
+	 * Adds a given value indexed with a given key to the tree according to the
+	 * binary search structure
+	 * 
+	 * @param key
+	 *            - the key of the given element
+	 * @param value
+	 *            - the value of the given element
+	 */
+	public void put(K key, V value) {
+		if (root == null) {
+			root = new BSTNode(key, value);
+		} else {
+			putHelper(root, key, value);
+		}
+		size++;
+	}
+
+	private void putHelper(BSTNode n, K key, V value) {
+		if (key.compareTo(n.key) > 0) {
+			if (n.right == null) {
+				n.right = new BSTNode(key, value);
+			} else {
+				putHelper(n.right, key, value);
+			}
+		} else {
+			if (n.left == null) {
+				n.left = new BSTNode(key, value);
+			} else {
+				putHelper(n.left, key, value);
+			}
+		}
+	}
+
+	/**
+	 * returns a value associated with the given key in this binary search tree.
+	 * If multiple values are associated with this key, any one may be returned.
+	 * If there is no element associated with this key, null is returned.
+	 * 
+	 * @param key
+	 *            - the key to search for.
+	 * @return - a value to which the specified key is mapped, or null if this
+	 *         tree contains no mapping for the key
+	 * @throws NullPointerException
+	 *             if the key is null
+	 */
+	public V get(K key) {
+		return getHelper(key, root);
+	}
+
+	private V getHelper(K key, BSTNode n) {
+		if (n == null) {
+			return null;
+		} else if (key.compareTo(n.key) == 0) {
+			return n.value;
+		} else if (key.compareTo(n.key) <= 0) {
+			return getHelper(key, n.left);
+		} else {
+			return getHelper(key, n.right);
+		}
+	}
+
+	/**
+	 * Removes an element with the given key. The resulting tree is a binary
+	 * search tree. If there is no such key, the tree is unchanged. If there are
+	 * multiple values associated with this key, only one is removed. Returns
+	 * the value associated with this key or null if there is no such value.
+	 * 
+	 * @param key
+	 *            - the key
+	 * @return - a value to which the specified key is mapped, or null if this
+	 *         tree contains no mapping for the key
+	 * @throws NullPointerException
+	 *             if the key is null
+	 */
+
+	public V remove(K key) {
+		if (key == null) {
+			throw new NullPointerException();
+		}
+		if (root == null) {
+			return null;
+		}
+		int compare = key.compareTo(root.key);
+		if (compare == 0) {
+			return removeRoot();
+		}
+
+		// main loop for searching for node to replace
+		BSTNode parent = root;
+		BSTNode current = continueSearch(parent, compare);
+		while (current != null) {
+			compare = key.compareTo(current.key);
+			if (compare == 0) {
+				return removeNodeAndCleanup(current, parent);
+			}
+			parent = current;
+			current = continueSearch(current, compare);
+		}
+		// node not found
+		return null;
+	}
+
+	private V removeRoot() {
+		V result = root.value;
+		if (root.right != null) {
+			addLefttoRight(root);
+			root = root.right;
+		} else {
+			root = root.left;
+		}
+		size--;
+		return result;
+	}
+
+	private BSTNode continueSearch(BSTNode node, int compare){
+		return compare < 0 ? node.left : node.right;
+	}
+
+	private V removeNodeAndCleanup(BSTNode toRemove, BSTNode parent) {
+		V result = toRemove.value;
+		BSTNode replacementChild;
+		if (toRemove.right != null) {
+			addLefttoRight(toRemove);
+			replacementChild = toRemove.right;
+		} else {
+			replacementChild = toRemove.left;
+		}
+
+		if (toRemove == parent.right) {
+			parent.right = replacementChild;
+		} else {
+			parent.left = replacementChild;
+		}
+		size--;
+		return result;
+	}
+
+	/**
+	 * Add left subtree of node to right subtree, assumes rightChild != null
+	 * Does not remove the left subtree, so the node should be further processed
+	 * by the caller
+	 * 
+	 * @param node
+	 *            - node whose children are to be modified
+	 */
+	private void addLefttoRight(BSTNode node) {
+		BSTNode left = node.left;
+		BSTNode leftmostRight = node.right;
+
+		while (leftmostRight.left != null) {
+			leftmostRight = leftmostRight.left;
+		}
+		leftmostRight.left = left;
+	}
+
+	private enum Order {
+		POST, PRE, IN
+	}
+
+	/** Traverse the tree in preorder form
+	 * @return an ArrayList of KVPairs of each node's key and value
+	 */
+	public ArrayList<KVPair<K, V>> preOrder() {
+		return traverse(Order.PRE);
+	}
+
+	
+	/** Traverse the tree in inorder form
+	 * @return an ArrayList of KVPairs of each node's key and value
+	 */
+	public ArrayList<KVPair<K, V>> inOrder() {
+		return traverse(Order.IN);
+	}
+
+	/** Traverse the tree in postorder form
+	 * @return an ArrayList of KVPairs of each node's key and value
+	 */
+	public ArrayList<KVPair<K, V>> postOrder() {
+		return traverse(Order.POST);
+	}
+
+	private ArrayList<KVPair<K, V>> traverse(Order order) {
+		ArrayList<KVPair<K, V>> ans = new ArrayList<KVPair<K, V>>();
+		traverserHelper(root, order, ans);
+		return ans;
+	}
+
+	private void traverserHelper(BSTNode n, Order order,
+			ArrayList<KVPair<K, V>> ans) {
+		if (n == null) {
+			return;
+		}
+		KVPair<K, V> item = new KVPair<K, V>(n.key, n.value);
+		if (order == Order.PRE) {
+			ans.add(item);
+		}
+		traverserHelper(n.left, order, ans);
+		if (order == Order.IN) {
+			ans.add(item);
+		}
+		traverserHelper(n.right, order, ans);
+		if (order == Order.POST) {
+			ans.add(item);
+		}
+	}
+
+	/**
+	 * Clears all elements from a given tree. The resulting tree is empty.
+	 */
+	public void clear() {
+		root = null;
+		size = 0;
+	}
+
+	protected class BSTNode {
+		public K key;
+		public V value;
+		public BSTNode left = null;
+		public BSTNode right = null;
+
+		// null key will generate a null pointer exception when
+		// a method (such as compareTo) is called on it.
+		// This is fine, according to the JCF specification.
+		public BSTNode(K key, V value) {
+			this.key = key;
+			this.value = value;
+		}
+		
+		public String toString(){
+			String l = ("" + left).replace("\n","\n    ");
+			String r = ("" + right).replace("\n","\n   ");
+			return String.format("(%s, %s)\nleft:%s\nright:%s", key, value, l, r);
+		}
+	}
+	
+	protected int getHeight(BSTNode n){
+		if(n == null){
+			return 0;
+		}
+		return 1 + Math.max(getHeight(n.left), getHeight(n.right));
+	}
+	
+	public boolean isBalanced(){
+		return isBalancedHelper(root);
+	}
+	
+	protected boolean isBalancedHelper(BSTNode n){
+		if (n == null){
+			return true;
+		}
+		int diff = Math.abs(getHeight(n.left) - getHeight(n.right));
+		if (diff > 1)
+			return false;
+		return isBalancedHelper(n.left) && isBalancedHelper(n.right);
+	}
+}

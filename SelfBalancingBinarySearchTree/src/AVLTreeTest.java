@@ -11,12 +11,24 @@ public class AVLTreeTest extends TestBinarySearchTree{
 	}
 	
 	@Test
-	public void selfBalancingTestRightRight(){
-		emptyTree.put(10, "foo");
-		emptyTree.put(12, "foo");
-		emptyTree.put(14, "foo");
+	public void selfBalancingTestRightRightRoot(){
+		emptyTree.put(10, "A");
+		emptyTree.put(12, "B");
+		emptyTree.put(14, "C");
 		assertTrue(emptyTree.isBalanced());
 	}
+	@Test
+	public void selfBalancingTestRightRightNotRoot(){
+		emptyTree.put(8, "A");
+		emptyTree.put(15, "B");
+		emptyTree.put(17, "B"); 
+		emptyTree.put(9, "C");
+		emptyTree.put(10, "D");
+		System.out.println(emptyTree);
+		assertTrue(emptyTree.isBalanced());
+	}
+	
+	
 	
 	
 	

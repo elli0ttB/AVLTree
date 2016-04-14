@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?><testrun name="TestBinarySearchTree" project="Lab9" tests="20" started="20" failures="0" errors="0" ignored="0">
+  <testsuite name="TestBinarySearchTree" time="0.004">
+    <testcase name="TestNonEmpty" classname="TestBinarySearchTree" time="0.001"/>
+    <testcase name="TestPutGetRoot" classname="TestBinarySearchTree" time="0.0"/>
+    <testcase name="testIsBalancedNegative" classname="TestBinarySearchTree" time="0.0"/>
+    <testcase name="TestSize" classname="TestBinarySearchTree" time="0.0"/>
+    <testcase name="TestRemoveElement7" classname="TestBinarySearchTree" time="0.0"/>
+    <testcase name="TestRemoveRootWithNoRightChild" classname="TestBinarySearchTree" time="0.0"/>
+    <testcase name="TestNullKey" classname="TestBinarySearchTree" time="0.0"/>
+    <testcase name="TestRemoveRootWithNoLeftChild" classname="TestBinarySearchTree" time="0.0"/>
+    <testcase name="TestRemoveRoot" classname="TestBinarySearchTree" time="0.0"/>
+    <testcase name="TestRemoveRootOneChild" classname="TestBinarySearchTree" time="0.0"/>
+    <testcase name="testIsBalancedPostive" classname="TestBinarySearchTree" time="0.0"/>
+    <testcase name="RemoveNullKey" classname="TestBinarySearchTree" time="0.0"/>
+    <testcase name="TestRemoveDuplicate" classname="TestBinarySearchTree" time="0.0"/>
+    <testcase name="TestRemoveOnEmptyTree" classname="TestBinarySearchTree" time="0.0"/>
+    <testcase name="TestGetFromEmpty" classname="TestBinarySearchTree" time="0.001"/>
+    <testcase name="TestGet" classname="TestBinarySearchTree" time="0.0"/>
+    <testcase name="TestClear" classname="TestBinarySearchTree" time="0.0"/>
+    <testcase name="TestEmpty" classname="TestBinarySearchTree" time="0.0"/>
+    <testcase name="TestRemoveAllElements" classname="TestBinarySearchTree" time="0.0"/>
+    <testcase name="TestGetNotThere" classname="TestBinarySearchTree" time="0.0"/>
+  </testsuite>
+</testrun>

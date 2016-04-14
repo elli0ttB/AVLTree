@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<session version="1.0">
+<refactoring comment="Rename method &apos;BinarySearchTree.height(...)&apos; to &apos;getHeight&apos;&#x0A;- Original project: &apos;Lab9&apos;&#x0A;- Original element: &apos;BinarySearchTree.height(...)&apos;&#x0A;- Renamed element: &apos;BinarySearchTree.getHeight(...)&apos;&#x0A;- Update references to refactored element" delegate="false" deprecate="false" description="Rename method &apos;height&apos;" flags="589830" id="org.eclipse.jdt.ui.rename.method" input="/src&lt;{BinarySearchTree.java[BinarySearchTree~height~QBSTNode;" name="getHeight" references="true" stamp="1460582369027" version="1.0"/>
+</session>

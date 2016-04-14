@@ -1,6 +1,8 @@
-import BinarySearchTree.BSTNode;
+import java.util.ArrayList;
+import java.util.List;
 
 public class AVLTree<K extends Comparable<K>, V> extends BinarySearchTree<K, V> {
+	ArrayList<BSTNode> putTrace = new ArrayList<BSTNode>();
 
 	/**
 	 * Adds a given value indexed with a given key to the tree according to the
@@ -18,176 +20,125 @@ public class AVLTree<K extends Comparable<K>, V> extends BinarySearchTree<K, V> 
 		if (root == null) {
 			root = new BSTNode(key, value);
 		} else {
-			putHelper(root, key, value);
+			ArrayList<BSTNode> putTrace = new ArrayList<BSTNode>();
+			putHelper(root, key, value, putTrace);
+			checkBalance(putTrace);
 		}
 		size++;
 	}
 
-	// find node where we added
-	// go through parents
-	// for each parent, if height(left) - height(right) then go to cases to
-	// balance it
-	//
-
-	// If a tree is balanced and we are adding a single a node, we can never get
-	// to a situation where
-	// there we have only 1 child and that child has 2 children.
-	// this is what we return to parent calls
-	private class BalancingContext {
-		BSTNode firstChild;
-		BSTNode grandChild;
-		boolean subTreeBalanced;
-		int height;
-		
-		public void setContext(BSTNode firstChild, BSTNode grandChild, boolean subTreeBalanced, int height){
-			this.firstChild = firstChild;
-			this.grandChild = grandChild;
-			this.subTreeBalanced = subTreeBalanced;
-			this.height = height;
-		}
-	}
-	
-	BalancingContext context = new BalancingContext();
-
 	// each call to putHelper context to be the current information after the call
-	private void putHelper(BSTNode n, K key, V value) {
-		
-		
-		// RIGHT
+	private void putHelper(BSTNode n, K key, V value, List<BSTNode> putTrace) {
+		putTrace.add(n);
 		
 		if (key.compareTo(n.key) > 0) {
 			if (n.right == null) {
 				n.right = new BSTNode(key, value);
-				context.setContext(n, n.right, true, 1);
+				putTrace.add(n.right);
 			} else {
-				putHelper(n.right, key, value);
-				if (context.subTreeBalanced) {
-					if (!isBalancedHelper(n)) {
-						context.subTreeBalanced = false;
-						balance();
-					// the whole subtree is balanced, so look higher
-					} else {
-						context.setContext(n, n.right, true, context.height + 1);
-					}
-				} // if not balanced, we do nothing
+				putHelper(n.right, key, value, putTrace);
 			}
-			
-		// LEFT	
 			
 		} else {
 			if (n.left == null) {
 				n.left = new BSTNode(key, value);
 			} else {
-				putHelper(n.left, key, value);
-				if (context.subTreeBalanced) {
-					if (!isBalancedHelper(n)) {
-						// do balancing
-						context.subTreeBalanced = false;
-						balance();
-					} else {
-						context.setContext(n, n.left, true, context.height + 1);
-					}
-				}
+				putHelper(n.left, key, value, putTrace);
+				putTrace.add(n.left);
 			}
 		}
 	}
 	
-	public enum Problem{
-		LEFTLEFT, RIGHTRIGHT, LEFTRIGHT, RIGHTLEFT;
+	private void checkBalance(List<BSTNode> putTrace){
+		// h: height of `top.right`, which is equal to 2 + index in putTrace2
+		for(int index = putTrace.size() - 3; index >= 0; index--){
+			BSTNode current = putTrace.get(index);
+			BSTNode child = getOtherChild(current, putTrace.get(index + 1));
+			int h = putTrace.size() - index - 1;
+			if (Math.abs((getHeight(child) - h)) > 1){
+				balance(index, current, putTrace);
+				return;
+			}
+		}
 	}
 	
 	// use the balancing context to figure things out
-	private void balance(BSTNode grandparent, BSTNode parent, BSTNode unbalanced, Problem problem){
-		
-		switch(problem){
-		case LEFTRIGHT:
-		case LEFTLEFT:
-			break;
-		case RIGHTLEFT:
-		case RIGHTRIGHT:
-			// we add unbalanced's parent to it's left subtree 
-			// the grandparent replaces the parent with us
-			
-			
-			addToLeftSubTreeOfRightChild(parent);
+	private void balance(int index, BSTNode unbalanced, List<BSTNode> putTrace){
+		BSTNode child = putTrace.get(index + 1);
+		BSTNode grandchild = putTrace.get(index + 2);
+		boolean childIsLeft = unbalanced.left == child;
+		boolean grandchildIsLeft = child.left == grandchild;
+	
+		if (childIsLeft && grandchildIsLeft){
+			leftLeft(index, unbalanced, putTrace);
+		} else if (childIsLeft && ! grandchildIsLeft){
+			leftRight(index, unbalanced, putTrace);
+		} else if (grandchildIsLeft){
+			rightLeft(index, unbalanced, putTrace);
+		} else {
+			rightRight(index, unbalanced, putTrace);
 		}
 	}
 	
+	private void leftLeft(int index, BSTNode unbalanced, List<BSTNode> putTrace){
+		
+		
+	}
+	private void leftRight(int index, BSTNode unbalanced, List<BSTNode> putTrace){
+		
+	}
+	
+	private void rightLeft(int index, BSTNode unbalanced, List<BSTNode> putTrace){
+		
+	}
+	
+	private void rightRight(int index, BSTNode unbalanced, List<BSTNode> trace){
+		BSTNode newRight = moveToRightDotLeft(unbalanced);
+		if (unbalanced == root){
+			root = newRight;
+		} else {
+			BSTNode parent = trace.get(index - 1);
+			replace(parent, unbalanced, newRight);
+		}
+	}
+
+	private BSTNode getOtherChild(BSTNode parent, BSTNode child){
+		if (parent.left == child){
+			return parent.right;
+		}
+		if (parent.right == child){
+			return parent.left;
+		}
+		
+		throw new IllegalArgumentException();
+	}
+		
 	private void replace(BSTNode parent, BSTNode oldChild, BSTNode newChild){
 		if (oldChild == parent.right){
 			parent.right = newChild;
-		} else {
+		} else if (oldChild == parent.left){
 			parent.left = newChild;
+		} else{
+			throw new IllegalArgumentException();
 		}
 	}
 	
-	public void addToLeftSubTreeOfRightChild(BSTNode n){
-		BSTNode left = n.right.left;
-		n.right.left = n;
-		n.right = left;
+	public String toString(){
+		if (root == null){
+			return "()";
+		}
+		return root.toString();
 	}
 	
-	
-	public V remove(K key) {
-		if (key == null) {
-			throw new NullPointerException();
-		}
-		if (root == null) {
-			return null;
-		}
-		int compare = key.compareTo(root.key);
-		if (compare == 0) {
-			return removeRoot();
-		}
-
-		// main loop for searching for node to replace
-		BSTNode parent = root;
-		BSTNode current = continueSearch(parent, compare);
-		while (current != null) {
-			compare = key.compareTo(current.key);
-			if (compare == 0) {
-				return removeNodeAndCleanup(current, parent);
-			}
-			parent = current;
-			current = continueSearch(current, compare);
-		}
-		// node not found
-		return null;
+	/** replaces n.rightleft. with n, adding what was n.rightleft. to n
+	 * @return the new subtree n should be replaced with
+	 */
+	public BSTNode moveToRightDotLeft(BSTNode n){
+		BSTNode right = n.right;
+		// swap n and n.right.left
+		BSTNode tmp = right.left;
+		right.left = n;
+		n.right = tmp;
+		return right;
 	}
-
-	private V removeRoot() {
-		V result = root.value;
-		if (root.right != null) {
-			addLefttoRight(root);
-			root = root.right;
-		} else {
-			root = root.left;
-		}
-		size--;
-		return result;
-	}
-
-	private BSTNode continueSearch(BSTNode node, int compare){
-		return compare < 0 ? node.left : node.right;
-	}
-
-	private V removeNodeAndCleanup(BSTNode toRemove, BSTNode parent) {
-		V result = toRemove.value;
-		BSTNode replacementChild;
-		if (toRemove.right != null) {
-			addLefttoRight(toRemove);
-			replacementChild = toRemove.right;
-		} else {
-			replacementChild = toRemove.left;
-		}
-
-		if (toRemove == parent.right) {
-			parent.right = replacementChild;
-		} else {
-			parent.left = replacementChild;
-		}
-		size--;
-		return result;
-	}
-
 }

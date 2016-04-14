@@ -250,13 +250,19 @@ public class BinarySearchTree<K extends Comparable<K>, V> {
 			this.key = key;
 			this.value = value;
 		}
+		
+		public String toString(){
+			String l = ("    " + left).replace("\n","\n    ");
+			String r = ("    " + right).replace("\n","\n    ");
+			return String.format("(%s, %s)\n%s\n%s", key, value, r, l);
+		}
 	}
 	
-	protected int height(BSTNode n){
+	protected int getHeight(BSTNode n){
 		if(n == null){
 			return 0;
 		}
-		return 1 + Math.max(height(n.left), height(n.right));
+		return 1 + Math.max(getHeight(n.left), getHeight(n.right));
 	}
 	
 	public boolean isBalanced(){
@@ -267,7 +273,7 @@ public class BinarySearchTree<K extends Comparable<K>, V> {
 		if (n == null){
 			return true;
 		}
-		int diff = Math.abs(height(n.left) - height(n.right));
+		int diff = Math.abs(getHeight(n.left) - getHeight(n.right));
 		if (diff > 1)
 			return false;
 		return isBalancedHelper(n.left) && isBalancedHelper(n.right);
