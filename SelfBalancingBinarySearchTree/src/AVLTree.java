@@ -1,4 +1,5 @@
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class AVLTree<K extends Comparable<K>, V> extends BinarySearchTree<K, V> {
@@ -68,6 +69,9 @@ public class AVLTree<K extends Comparable<K>, V> extends BinarySearchTree<K, V> 
 		BSTNode grandchild = putTrace.get(index + 2);
 		boolean childIsLeft = unbalanced.left == child;
 		boolean grandchildIsLeft = child.left == grandchild;
+		
+	//	System.out.println(child);
+	//	System.out.println(grandchildIsLeft);
 	
 		if (childIsLeft && grandchildIsLeft){
 			leftLeft(index, unbalanced, putTrace);
@@ -75,24 +79,38 @@ public class AVLTree<K extends Comparable<K>, V> extends BinarySearchTree<K, V> 
 			leftRight(index, unbalanced, putTrace);
 		} else if (grandchildIsLeft){
 			rightLeft(index, unbalanced, putTrace);
-		} else {
+		} else if (child.right == grandchild){
 			rightRight(index, unbalanced, putTrace);
-		}
+		}// else throw new IllegalArgumentException();
 	}
 	
 	private void leftLeft(int index, BSTNode unbalanced, List<BSTNode> putTrace){
+		System.out.println("executed leftLeft");
 		
 		
 	}
 	private void leftRight(int index, BSTNode unbalanced, List<BSTNode> putTrace){
+		System.out.println("executed leftRight");
+		 
+		
 		
 	}
 	
-	private void rightLeft(int index, BSTNode unbalanced, List<BSTNode> putTrace){
-		
+	private void rightLeft(int index, BSTNode unbalanced, List<BSTNode> trace){
+		System.out.println("executed rightLeft");
+		BSTNode newRight = moveToLeftDotRight(unbalanced);
+		if (unbalanced == root){
+			root = newRight;
+		} else {
+			BSTNode parent = trace.get(index - 1);
+			replace(parent, unbalanced, newRight);
+		}
+		rightRight(index, unbalanced, putTrace);
 	}
 	
+	// needs the trace up to index
 	private void rightRight(int index, BSTNode unbalanced, List<BSTNode> trace){
+		System.out.println("executed rightRight");
 		BSTNode newRight = moveToRightDotLeft(unbalanced);
 		if (unbalanced == root){
 			root = newRight;
@@ -133,7 +151,7 @@ public class AVLTree<K extends Comparable<K>, V> extends BinarySearchTree<K, V> 
 	/** replaces n.rightleft. with n, adding what was n.rightleft. to n
 	 * @return the new subtree n should be replaced with
 	 */
-	public BSTNode moveToRightDotLeft(BSTNode n){
+	private BSTNode moveToRightDotLeft(BSTNode n){
 		BSTNode right = n.right;
 		// swap n and n.right.left
 		BSTNode tmp = right.left;
@@ -141,4 +159,15 @@ public class AVLTree<K extends Comparable<K>, V> extends BinarySearchTree<K, V> 
 		n.right = tmp;
 		return right;
 	}
+	
+	private BSTNode moveToLeftDotRight(BSTNode n){
+		BSTNode left = n.left;
+		// swap n and n.right.left
+		BSTNode tmp = left.right;
+		left.right = n;
+		n.left = tmp;
+		return left;
+	}
+	
+	
 }

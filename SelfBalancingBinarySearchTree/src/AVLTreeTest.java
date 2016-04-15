@@ -28,6 +28,15 @@ public class AVLTreeTest extends TestBinarySearchTree{
 		assertTrue(emptyTree.isBalanced());
 	}
 	
+	@Test
+	public void selfBalancingTestLeftRightRoot(){
+		emptyTree.put(10, "A");
+		emptyTree.put(15, "E");
+		emptyTree.put(12, "C");
+		System.out.println(emptyTree);
+		assertTrue(emptyTree.isBalanced());
+	}
+	
 	
 	
 	
